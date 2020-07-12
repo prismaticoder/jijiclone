@@ -9,6 +9,12 @@ class Seller(models.Model):
     email = models.EmailField(max_length = 100, unique=True)
     password = models.CharField(max_length = 255)
 
+class Buyer(models.Model):
+    first_name = models.CharField(max_length = 100)
+    last_name = models.CharField(max_length = 100)
+    email = models.EmailField(max_length=100, unique=True)
+    location = models.CharField(max_length = 50)
+
 class Item(models.Model):
     name = models.CharField(max_length = 255)
     price = models.IntegerField()
@@ -16,5 +22,5 @@ class Item(models.Model):
     imageUrl = models.CharField(max_length = 200)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE)
     is_sold = models.BooleanField(default=0)
+    interested_buyers = models.ManyToManyField(Buyer, related_name='items',blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    updated_at = models.DateTimeField(auto_now_add=True)
