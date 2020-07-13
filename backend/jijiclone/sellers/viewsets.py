@@ -1,8 +1,8 @@
 from .serializers import SellerSerializer, BuyerSerializer, ItemSerializer
-from backend.jijiclone.sellers.models import Seller, Buyer, Item
+from sellers.models import Seller, Buyer, Item
 from rest_framework import viewsets, permissions
 
-class ItemViewset(viewsets.ModelViewSet):
+class ItemViewSet(viewsets.ModelViewSet):
     queryset = Item.objects.all()
     permission_classes = [
         permissions.AllowAny
