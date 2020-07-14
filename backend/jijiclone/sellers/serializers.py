@@ -26,6 +26,15 @@ class ItemSerializer(serializers.ModelSerializer):
         seller = Seller.objects.get(pk=self.context['pk'])
         validated_data['seller'] = seller
         return Item.objects.create(**validated_data)
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.name)
+        instance.description = validated_data.get('description', instance.description)
+        instance.price = validated_data.get('price', instance.price)
+        instance.slug = validated_data.get('slug', instance.slug)
+        instance.is_sold = validated_data.get('is_sold', instance.is_sold)
+        instance.imageUrl = validated_data.get('imageUrl', instance.imageUrl)
+        instance.save()
+        return instance
     
 
 

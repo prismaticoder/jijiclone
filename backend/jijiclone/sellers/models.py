@@ -23,7 +23,7 @@ class Item(models.Model):
     price = models.IntegerField()
     description = models.TextField()
     imageUrl = models.CharField(max_length = 200)
-    slug = models.CharField(max_length = 200)
+    slug = models.CharField(max_length = 200, unique=True)
     seller = models.ForeignKey(Seller, on_delete=models.CASCADE, related_name='items')
     is_sold = models.BooleanField(default=0)
     interested_buyers = models.ManyToManyField(Buyer, related_name='items',blank=True)
