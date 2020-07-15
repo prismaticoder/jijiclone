@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from sellers.models import Seller, Item, Buyer
 
+
 # Seller serializer
 
 class SellerSerializer(serializers.ModelSerializer):

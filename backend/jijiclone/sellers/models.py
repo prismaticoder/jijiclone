@@ -1,4 +1,8 @@
 from django.db import models
+from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from rest_framework.authtoken.models import Token
 
 # Create your models here.
 
@@ -10,7 +14,7 @@ class Seller(models.Model):
     password = models.CharField(max_length = 255)
 
     def __str__(self):
-        return self.first_name + ' ' + self.last_name
+        return self.email
 
 class Buyer(models.Model):
     first_name = models.CharField(max_length = 100)
