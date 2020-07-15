@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.contrib.auth.hashers import make_password, check_password
 from sellers.models import Seller, Item, Buyer
 
 
@@ -8,6 +9,11 @@ class SellerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Seller
         fields = '__all__'
+        extra_kwargs = {'password': {'write_only': True}}
+
+    def create(self, validated_data):
+        validated_data['password'] = make_password(validated_data['password'])
+        return Seller.objects.create(**validated_data)
 
 class SellerField(serializers.RelatedField):
     def to_representation(self, value):
@@ -38,6 +44,20 @@ class ItemSerializer(serializers.ModelSerializer):
         return instance
     
 
+class LoginSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+
+    def validate(self, data):
+        try:
+            checkuser = Seller.objects.get(email=data['email'])
+
+            if check_password(data['password'], checkuser.password):
+                return SellerSerializer(checkuser).data
+            raise serializers.ValidationError(detail={"error": "Incorrect username or password"})
+
+        except Seller.DoesNotExist:
+            raise serializers.ValidationError(detail={"error": "Incorrect username or password"})
 
 class BuyerSerializer(serializers.ModelSerializer):
     class Meta:
