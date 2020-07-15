@@ -23,8 +23,22 @@ class SellerField(serializers.RelatedField):
             "email": value.email
         }
         return seller
+
+class BuyerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Buyer
+        fields = '__all__'
+
+    def create(self, validated_data):
+        item = Item.objects.get(slug=self.context['slug'])
+        buyer = Buyer.objects.create(**validated_data)
+        
+        item.interested_buyers.add(buyer)
+        return buyer
+
 class ItemSerializer(serializers.ModelSerializer):
     seller = SellerField(read_only=True)
+    interested_buyers = BuyerSerializer(many=True, read_only=True)
     class Meta:
         model = Item
         fields = '__all__'
@@ -58,8 +72,3 @@ class LoginSerializer(serializers.Serializer):
 
         except Seller.DoesNotExist:
             raise serializers.ValidationError(detail={"error": "Incorrect username or password"})
-
-class BuyerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Buyer
-        fields = '__all__'

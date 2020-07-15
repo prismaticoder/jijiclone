@@ -6,7 +6,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from .helpers.response import sendRes, sendError
-from .serializers import SellerSerializer, ItemSerializer, LoginSerializer
+from .serializers import SellerSerializer, ItemSerializer, LoginSerializer, BuyerSerializer
 from rest_framework.authtoken.models import Token
 from rest_framework import permissions, exceptions, status
 import jwt, datetime
@@ -151,4 +151,34 @@ class GetAllItems(APIView):
         
         return sendRes(data=serializer.data)
 
+
+class GetSingleItem(APIView):
+    permission_classes = (AllowAny,)
+
+    def get(self, request, slug):
         
+        try:
+            item = Item.objects.filter(is_sold=0).get(slug=slug)
+        except Item.DoesNotExist:
+            return sendError(404, "This item does not exist")
+
+        serializer = ItemSerializer(item)
+        
+        return sendRes(data=serializer.data)
+
+class MarkAsInterested(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request, slug):
+        try:
+            item = Item.objects.filter(is_sold=0).get(slug=slug)
+        except Item.DoesNotExist:
+            return sendError(404, "This item does not exist")
+
+        serializer = BuyerSerializer(data=request.data, context={'slug': slug})
+        
+        if serializer.is_valid():
+            serializer.save()
+            return sendRes(None,200,"You have successfully marked interest in this item!")
+        return sendError(400, serializer.errors)
+
